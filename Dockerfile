@@ -1,19 +1,20 @@
-# Use a base image (e.g., Nginx for serving static files)
-FROM nginx:alpine
+# Use the official Node.js image as the base image
+FROM node:16
 
-# Set working directory inside the container
-WORKDIR /usr/share/nginx/html
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
-# Copy static files to the Nginx default static directory
-COPY public/index.html /usr/share/nginx/html/
-COPY public/style.css /usr/share/nginx/html/
-COPY public/server.js /usr/share/nginx/html/
+# Copy package.json and install dependencies (if needed)
+COPY package*.json ./  
 
-# Expose port 80 for the Nginx server
-EXPOSE 80
+# Set up the project files (HTML, CSS, JS)
+COPY . .
 
-# Add a HEALTHCHECK to monitor application health
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:80 || exit 1
+# Install dependencies (if any, like express)
+RUN npm install
 
-# Start Nginx (default CMD for nginx:alpine)
+# Expose the port the app will run on (3000 in this case)
+EXPOSE 3000
+
+# Start the Node.js server
+CMD ["node", "server.js"]
